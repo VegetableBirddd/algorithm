@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>字符拼接</title>
+    <style>
+        a:hover{
+            cursor: pointer;
+        }
+        a{
+            color: cornflowerblue;
+        }
+        .corn-loading {
+            display: inline-block;
+            background-color: rgb(42, 42, 49);
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            opacity: .3;
+            animation: c-loading-ani 750ms infinite linear;
+        }
+
+        @keyframes c-loading-ani {
+            0%{
+                opacity: .3;
+                transform: rotateY(0deg);
+            }
+            40%{
+                transform: rotateY(90deg);
+            }
+            50%{
+                opacity: .6;
+                transform: rotateY(180deg);
+            }
+            60% {
+                transform: rotateY(270deg);
+            }
+            100% {
+                opacity: .3;
+                transform: rotateY(360deg);
+            }
+        }
+    </style>
+    <script src="./tools.js"></script>
+</head>
+<body>
+    <span class="corn-loading"></span>
+    <a onclick="startFn()">开始读取</a>
+    <div>
+        <h3>文档1</h3>
+        <p id="txt1"></p>
+    </div>
+    <div>
+        <h3>文档2</h3>
+        <p id="txt2"></p>
+    </div>
+    <div>
+        <h3>词组</h3>
+        <p id="phrases"></p>
+    </div>
+    <div>
+        <h3>结果</h3>
+        <span id="start"></span>
+        <p id="result"></p>
+        <span id="end"></span>
+    </div>
+    <script>
+        //======================================================核心代码START======================================================
+        /**
+         * 查询词组phrases是否拼接成文本txt
+         * @param {string} txt
+         * @param {string[]} phrases
+         * @return {any}
+         */
+         function splicing(txt, phrases) {
+            let a  = Date.now();
+            let intervals = getIntervals(txt, phrases) //第一步：获取索引区间
+            if (intervals.length==0) return new Map();//如果没有，直接返回空map
+            if (intervals[0][0] != 0) return new Map();//如果最前面的索引没有，直接返回空map
+            if (intervals[intervals.length - 1][1] != txt.length - 1) return new Map();//如果最后面的索引，没有直接返回空map
+
+            let cover = getCover(txt.length, intervals)//第二步：获取覆盖整个字段的数组区间
+            if (!cover) return new Map()
+            console.log(Date.now()-a);
+            //第三步通过数组区间分别计算词组出现的频率，这里因为cover只有一个值
+            return getFrequency(txt,cover);
+        }
+        
+        function getIntervals(txt, phrases) { //获取索引区间
+            let intervals = [];
+            phrases.forEach(i => {
+                let reg = new RegExp(i, 'g') //全局搜索词组
+                for (const match of txt.matchAll(reg)) {
+                    intervals.push([match['index'], match['index'] + i.length - 1])
+                }
+            })
+            return intervals.sort((a, b) => a[0] - b[0]);
+        }
+        function getCover(l,intervals){ //l为长度，只返回一个结果
+            let res;
+            function dfs(start, temp, record) {//start为开始索引，temp为结果数组，record为记录下一个值用作裁剪
+                if(res)return; //控制res
+                if ((temp.length!=0) && temp[temp.length - 1][1] == l - 1) { //结束条件
+                    res = temp.slice();
+                    return;
+                }
+                for (let i = start; i < intervals.length; i++) {
+                    if (intervals[i][0] == record) {
+                        temp.push(intervals[i]);
+                        dfs(i + 1, temp, intervals[i][1] + 1);
+                        temp.pop();
+                    }
+                }
+            }
+            dfs(0, [], 0);
+            return res; //有结果就返回
+        }
+        function getFrequency(txt, cover) { //txt为文本，cover为一个区间数组，返回出现次数
+            let map = new Map(); //通过map记录出现次数
+            cover.forEach(v=>{
+                let key = txt.slice(v[0],v[1]+1);
+                if(map.has(key)){
+                    map.set(key,map.get(key)+1)
+                }else{
+                    map.set(key,1);
+                }
+            })
+            return map;
+        }
+        //======================================================核心代码END======================================================
+
+        async function startFn(){ // 执行函数    PS：计时开始到结束的流程：开始执行时间--->读取文档--->通过算法判断---->结束执行时间
+            let txtDom1 = document.querySelector('#txt1');
+            let txtDom2 = document.querySelector('#txt2');
+            let phrasesDom = document.querySelector('#phrases');
+            let resultDom = document.querySelector('#result');
+            let startDom = document.querySelector('#start');
+            let endDom = document.querySelector('#end');
+
+            let startTime =  Date.now(); //记录开始时间
+            startDom.innerHTML = `程序开始执行，当前时间${new Date(startTime).formatDate('hh:mm:ss. S')}`
+            
+            // 第一步 获取数据并进行处理
+            let txt1 = await ajax({url:'./文档1.txt',methods:'GET'}); //获取文档1
+            let txt2 = await ajax({url:'./文档2.txt',methods:'GET'}); //获取文档2
+            let phrases = await ajax({url:'./词组.txt',methods:'GET'}); //获取词组
+            // 渲染获取的数据
+            txtDom1.innerHTML = txt1;
+            txtDom2.innerHTML = txt2;
+            phrasesDom.innerHTML = phrases;
+
+            txt1 = removePunctuation(txt1) ; // 去除标点，数字等。只保留汉字和单词字母
+            txt2 = removePunctuation(txt2) ; // 去除标点，数字等。只保留汉字和单词字母
+            phrases = phrases.split('、').filter(i=>i!=''); // 将词组分成数组形式
+
+            // 第二步 通过算法判断
+            let result1 = splicing(txt1,phrases);
+            let result2 = splicing(txt2,phrases);
+            
+            let endTime = Date.now(); //记录结束时间
+            endDom.innerHTML = `程序结束执行，当前时间${new Date(endTime).formatDate('hh:mm:ss. S')}，总计执行用时${endTime-startTime}毫秒`
+
+            // 第三步 将结果数据渲染到页面
+            resultDom.innerHTML = getText(result1,'文档1')+getText(result2,'文档2');
+        }
+
+        // startFn();
+    </script>
+</body>
+</html>
