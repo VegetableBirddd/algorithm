@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body style="height: 100vh;">
+    <div style="background-color: rgba(1, 123, 123, 0.11);">234
+        <p style="text-transform: lowercase;">FWAS<span>234234234</span></p>
+    </div>
+    
+    <p style="text-transform: lowercase;opacity: 0.11;background-color: rgba(1, 123, 123);">FWAS<span>234</span></p>
+
+    <!-- 行内元素使用text-align:center -->
+
+    <!-- 确定宽度width使用marin:0 auto -->
+
+    <!-- 使用display: table;margin: 0 auto; -->
+    <div style="width:300px;height: 300px;display: table;">
+        <div style="display: table-cell;margin: auto;">
+            内容
+            <div>nininininininin</div>
+        </div>
+    </div>
+
+    <!-- 使用position -->
+    <div style="position: relative;">
+        <div style="position: absolute;transform: translate(-50%,-50%);left: 50%;top: 50%;">
+            内容
+            <div>nininininininin</div>
+        </div>
+    </div>
+    <!-- 使用position -->
+    <div style="position: relative;width: 500px;height: 500px;">
+        <div style="position: absolute;top: 0;bottom: 0;left: 0;right: 0;margin: auto;">
+            内容
+            <div>nininininininin</div>
+        </div>
+    </div>
+    <!-- 使用flex布局 -->
+    <div style="display: flex;justify-content: center;align-items: center;width: 100%;height: 300px;">
+        <div style="width: 100px;height: 100px;">
+            内容
+            <div>nininininininin</div>
+        </div>
+    </div>
+    <div>
+        <div style="width: 50px;height: 50px;background-color: red;margin: 0 auto;">123</div>
+        <div style="width: 50px;height: 50px;background-color: rgb(152, 95, 95);margin-left: 50%;float: left;transform: translateX(-100%);"></div>
+        <div style="width: 50px;height: 50px;background-color: rgb(41, 65, 187);float: left;transform: translateX(-100%);"></div>
+    </div>
+    <div style="border:50px solid;border-color:red transparent  transparent transparent;"></div>
+
+    <div style="border: 1px solid bisque; width: 300px; height: 300px;display: flex;justify-content: flex-end;align-items: flex-end;">
+        <div style="width: 50px; height: 50px;background-color: aqua;"></div>
+    </div>
+    
+
+    <script>
+        // 排序
+        // 1.冒泡
+        function bubbleSort(arr){
+            const len = arr.length;
+            for(let i = 0; i < len - 1; i++){
+                for(let j = 0; j < len - i - 1; j++){
+                    if(arr[j] > arr[j+1]){
+                        const tmp = arr[j+1];
+                        arr[j+1] = arr[j];
+                        arr[j] = tmp;
+                    }
+                }
+            }
+        
+            return arr;
+        }
+        // 2.插入
+        function quickSort(arr){
+            sort(arr, 0, arr.length - 1);
+            return arr;
+            function sort(arr, low, high){
+                if(low >= high){
+                    return;
+                }
+                let i = low;
+                let j = high;
+                const x = arr[i]; // 取出比较值x，当前位置i空出，等待填入
+                while(i < j){
+                    // 从数组尾部，找出比x小的数字
+                    while(arr[j] >= x && i < j){
+                        j--;
+                    }
+                    // 将空出的位置，填入当前值， 下标j位置空出
+                    // ps：比较值已经缓存在变量x中
+                    if(i < j){
+                        arr[i] = arr[j]
+                        i++;
+                    }
+
+                    // 从数组头部，找出比x大的数字
+                    while(arr[i] <= x && i < j){
+                        i++;
+                    }
+                    // 将数字填入下标j中，下标i位置突出
+                    if(i < j){
+                        arr[j] = arr[i]
+                        j--;
+                    }
+                    // 一直循环到左右指针i、j相遇，
+                    // 相遇时，i==j, 所以下标i位置是空出的
+                }
+
+                arr[i] = x; // 将空出的位置，填入缓存的数字x，一轮排序完成
+
+                // 分别对剩下的两个区间进行递归排序
+                sort(arr, low, i - 1);
+                sort(arr, i+1, high);
+            }
+        }
+        console.log(quickSort([5,9,7,2,1,3,4,6,8]))
+        // 3.选择
+        // 4.快排
+        // 5.希尔
+        //实现Object.is
+        function is(x,y){
+            if(x===y){//判断+0和-0
+                return x!==0 || y!==0 || 1/x===1/y;
+            }else{
+                return x!==x && y!==y;
+            }
+        }
+        //实现instanceof
+        function MyInstanceof(left,right){
+            //基本数据类型直接返回false
+            if(typeof left!='object'&&typeof left!='function'||left==null)return false;
+            let proto = Object.getPrototypeOf(left);
+            while(true){
+                if(proto===null)return false;
+                if(proto===right.prototype)return true;
+                proto = Object.getPrototypeOf(proto);
+            }
+        }
+        console.log(MyInstanceof(Object,Object));
+        //实现Object.create
+        function create(ctor){
+            function fn() {};
+            fn.prototype = ctor;
+            return new fn;
+        }
+        //实现new函数
+        function myNew(fn){
+            if(typeof fn!=='function')throw '不是函数';
+
+            let obj = Object.create(fn.prototype); // PS1 如果不想使用fn，那可以用PS2的步骤
+            // let obj = {};//PS2
+            // obj.__proto__ = fn.prototype;//PS2 
+
+            let res = fn.call(obj,...arguments);
+            let isObject = typeof res ==='object'||res!==null;
+            let isFunction = typeof res ==='function';
+            return isObject||isFunction?res:obj;
+        }
+
+        //实现call/apply  apply传的参数是数组
+        Function.prototype.myCall=function(context,...arg){
+            var context = context || window;
+            let fn = Symbol();//为了防止有重名的
+            context[fn] = this;
+
+            // 以前的做法
+            // let result = eval('context.fn('+arg+')');//PS1 eval其实解决的是参数的问题，也可以用PS2步骤解决;
+            // '('+[1,2,3]+')'-->这里数组会转成字符串 从而变成 (1,2,3);
+
+            let result = context.fn(...arg);//PS2 有了ES6的扩展运算符，就不需要eval来解决参数问题;
+
+            delete context.fn;
+            return result;
+        }
+        //实现bind
+        Function.prototype.myBind = function(context,...arg){
+            let self = this;
+            var context = context || window;
+            let fn = function(){
+                return self.apply(this instanceof fn?this:context,[...arg,...arguments])
+            }
+            fn.prototype = self.prototype;
+            return fn;
+        }
+
+        //实现reduce
+        Array.prototype.myReduce = function(callback,initial){
+            //判断是否是数组
+            //判断callback是否是函数
+            let preVal;
+            let k = 0;
+            let ary = Object(this);//转换一下
+            let len = ary.length >>> 0;
+            if(initial){
+                preVal = initial;
+            }else{
+                if( k in ary){
+                    preVal = ary[k++];
+                }
+            }
+            for(let i = k;i<len;i++){
+                if(i in ary){
+                    preVal = callback.call(undefined,preVal,ary[i],i,ary);
+                }
+            }
+            if(!preVal)throw 'novalue';
+            return preVal;
+        }   
+        //实现map
+        Array.prototype.myMap = function(callback,context){
+            //判断是否是数组
+            //判断callback是否是函数
+            let ary = Object(this);
+            let len = ary.length>>>0;
+            let res = new Array(len);
+            for(let i=0;i<len;i++){ 
+                res[i] = callback.call(context,ary[i],i,ary);
+            }
+            return res[i];
+        }
+        //实现push
+        Array.prototype.myPush = function(...arg){
+            //判断是否是数组
+            //判断callback是否是函数
+            let ary = Object(this);
+            let len = ary.length>>>0;
+            let k = arg.length;
+            for(let i=0;i<k;i++){
+                ary[i+len] = arg[i];
+            }
+            let newLength = len+k;
+            ary.length = newLength;
+            return newLength;
+        }
+        //实现深浅拷贝--没实现完具体看试题宝典
+        const isObject = (target)=>(typeof target==='object'||typeof target==='function')&&target!==null;
+        const deepClone = (target,map=new WeakMap)=>{
+            if(map.has(target))return target;//map解决循环应用的问题
+            if(isObject(target)){
+                map.set(target,true);
+                const cloneTarget = Array.isArray(target)?[]:{};
+                for(let prop in target){
+                    if(target.hasOwnProperty(prop)){
+                        cloneTarget[prop] = deepClone(target[prop],map);
+                    }
+                }
+                return cloneTarget;
+            }else{
+                return target;
+            }
+        }
+        //forEach中用await会产生什么问题，要怎么解决呢==================
+        function handle(x){
+            return new Promise((resolve,reject)=>{
+                setTimeout(()=>{
+                    resolve(x)
+                },1000*x)
+            })
+        }
+        async function test(){
+            let arr = [4,2,1]
+            arr.forEach(async item=>{
+                console.log(await handle(item));
+            })
+        }
+        test();
+        //问题：await不会起作用，原因是foreach用的是for循环实现的
+        // for(let i =0;i<length;i++){
+        //     if(i in array){
+        //         callback(array[i],i,array);
+        //     }
+        // }
+        //解决：可以使用for...of来解决,原因是其采用迭代器去遍历
+        async function test(){
+            let arr = [4,2,1]
+            for(let item of arr){
+                console.log(await handle(item));
+            }
+        }
+        // ========================================================================
+
+        //前端常见的排序有哪些，其实现方法
+
+        //字符串的方法
+        //str.split('')
+        let str = ' abCd';
+        str.split('') //---> [ ,a,b,C,d]
+
+        //str.toLowerCase() / toUpperCase() 转换小写/大写
+        str.toLowerCase() // ---> 'abcd'  toUpperCase-->'ABCD'
+        
+        //str.trim() //去除前后的空白
+        str.trim() //---> 'abCd'
+        //整数转二进制：除2取余，逆序排列  小数转二进制：乘2取整，顺序排列
+        //0.1+0.2为什么不等于0.3 ：数字计算的时候会将其转换成二进制再转换成浮点数，0.1和0.2转换会无限循环，又数值只能保存53位，所以后面多余的位数只能被截掉，相加后就会出现精度损失
+        
+        //str.charAt(index) //返回index下标对应值 str.charCodeAt(index)//返回index下标对应的ascii值
+        str.charAt(1) //---> 'a'   //str.charCodeAt(a) ---> 97
+
+        //str.concat(...strings) //连接字符串
+        str.concat('1','2') //-->' abCd12'
+
+        //str.substr(startIndex,length) //截取值 startIndex可为负数  //str.substring(index1,index2)//判断index1和index2大小，小的为开始索引，大的结束。如果有负数会变成0索引
+        str.substr(2,3) //--> 'bCd'  str.substring(2,3) //--> 'b'
+
+        //str.slice(startIndex,endIndex) //startIndex和endIndex都可以为负数
+
+        //str.replace(searchValue,val) // searchValue为搜索值可以为正则，val为替换上去的值
+        str.replace('C','e') /// ---> ' abed'
+        str.search('C')//查找返回索引，可以用正则
+        str.match('C')//查找返回一个数组
+
+        //str.indexof() 查找元素并返回索引，没找到返回-1
+        str.indexOf('C')
+ 
+        //String.fromCodePoint(Unicode码点) //ES6方法 Unicode 码点返回对应字符  //对应es5 String.fromCharCode 原因es5不能识别大于0xFFFF的码点
+        String.fromCodePoint(97) //-->'a'   String.fromCharCode(97) //-->'a'
+        'a'.codePointAt(0) //=> 97      'a'.charCodeAt(0) //---> 97
+        
+        //ES6 includes(), startsWith(), endsWith() //返回布尔值，分别判断参数字符串是否在原字符串的全部/头部/尾部
+        //ES6 str.repeat(num)//将str重复num次  str.padStart(num,strt) str.padEnd(num,strt)//向前/向后补全字符串,直到长度达到num
+        'x'.padStart(4,'ab') //-->'abax'
+
+
+
+        //数字类型
+        // 方法
+        //num.toString(binary) 转换成字符串binary为几进制
+        let num =3;
+        num.toString(2) //==> '11'
+        //num.toFixed(3) 转为四舍五入保留几位数的字符串
+        num.toFixed(3) //==> '3.000'
+
+        //ES6 Number.isFinite(num)  Number.isNaN(num) Number.isInteger(num) //判断是否是无穷大Infinity/非数字NaN/整数
+        //ES6 移植到Number.parseInt
+        //ES6 BigInt大整数
+
+
+
+        //函数--参数默认值，参数的剩余参数rest，箭头函数
+        //尾调用函数  指某个函数的最后一步是调用另一个函数
+        // --尾调用优化
+
+        //尾递归函数
+
+        //ES6严格模式下会尾调用优化，但是普通模式只能自己实现尾递归优化函数，一下就是
+        function tco(f) {
+            var value;
+            var active = false;
+            var accumulated = [];
+
+            return function accumulator() {
+                accumulated.push(arguments);
+                if (!active) {
+                    active = true;
+                    while (accumulated.length) {
+                        value = f.apply(this, accumulated.shift());
+                    }
+                    active = false;
+                    return value;
+                }
+            };
+        }  
+
+        var sum = tco(function(x, y) {
+            if (y > 0) {
+                return sum(x + 1, y - 1)
+            }
+            else {
+                return x
+            }
+        });
+        console.log(sum(1, 10));
+
+        //数组 --扩展运算符 用于函数调用传入参数 PS:任何定义了遍历器（Iterator）接口的对象，都可以用扩展运算符转为真正的数组
+        console.log(...[1, 2, 3]) //--->1,2,3  ary.push(...[1,2,3])
+        //方法
+        let ary = [1,2,3]
+        //ES5 ary.push/pop/unshift/shift/join/slice/splice/reverse/sort/indexof
+        
+        //ES6 Array.from(target,fn)  可将类似数组的对象和可遍历（iterable）的对象转为真正的数组，第二个参数为函数相当于map进行计算
+        let arrayLike = {
+            '0': 'a',
+            '1': 'b',
+            '2': 'c',
+            length: 3
+        };
+        Array.from(arrayLike) // --->['a','b','c']
+
+        //ES6 Array.of() 将一组数据转为数组  与new Array()稍微不同
+        Array.of(3) //==> [3]
+        new Array(3) // => [empty ,empty ,empty ]
+
+        //ES6 ary.find/findIndex/includes /entries/keys/values /flat /copyWithin/fill /map/reduce/forEach
+        // ary.copyWithin(target,start,end) 从target开始替换 ，替换值为从start到end范围
+        ['a','b','c','d','e','f'].copyWithin(1,3,5) // ['a', 'd', 'e', 'd', 'e', 'f']
+        //ary.fill(val,start,end) 从start开始填充val，到end（不包括）
+        ['a','b','c','d','e','f'].fill('Q',3,5) //['a', 'b', 'c', 'Q', 'Q', 'f']
+
+        //拉平数组
+        function getFlatArr (list) {
+            return list.reduce((pre, item) => pre.concat(Array.isArray(item)? getFlatArr(item): item), [])
+        }
+        
+
+        // 对象
+        // 属性和函数的简介写法
+        // 方法
+        // 属性的遍历有5种
+        //  1.for...in循环遍历对象自身的和继承的可枚举属性（不含 Symbol 属性）
+        //  2.Object.keys返回一个数组，包括对象自身的（不含继承的）所有可枚举属性（不含 Symbol 属性）的键名
+        //  3.Object.getOwnPropertyNames返回一个数组，包含对象自身的所有属性（不含 Symbol 属性，但是包括不可枚举属性）的键名
+        //  4.Object.getOwnPropertySymbols返回一个数组，包含对象自身的所有 Symbol 属性的键名
+        //  5.Reflect.ownKeys返回一个数组，包含对象自身的（不含继承的）所有键名，不管键名是 Symbol 或字符串，也不管是否可枚举
+        
+        let obj = {a:1}
+        //obj.hasOwnProperty(prop) //判断prop是否是自己的属性
+        obj.hasOwnProperty('a')
+        //ES5 Object.defineProperty
+
+        //ES6 Object.is(x,y) // 和===有两点区别 1： -0不等于+0  2： NaN等于NaN
+        //ES6 Object.assign(target,obj1,obj2,...) //合并对象，浅拷贝 将obj1等属性合并到target中，相同的会覆盖
+        //ES6 Object.getOwnPropertyDescriptors(target) //返回指定对象所有自身属性（非继承属性）的描述对象  ES5的是Object.getOwnPropertyDescriptor(target,prop)
+        //ES6 Object.keys()，Object.values()，Object.entries()
+        //ES6 __proto__属性，Object.setPrototypeOf()，Object.getPrototypeOf()
+
+        //运算符的扩展
+        //指数运算符 **  / 链判断运算符 ?.  /  null判断运算符 ??
+        
+        
+        console.log('---------------------------------------------实现promise START------------------------------------------');
+        const PENDING = "pengding";
+        const FUFILLED = "fulfilled";
+        const REJECTED = "rejected";
+        class MP {
+            constructor(executor) {
+                this.status = PENDING;
+                this.value = null;
+                // 将回调函数保存起来
+                this.callbacks = [];
+                executor(this.resolve.bind(this), this.reject.bind(this));
+            }
+            static resolve(value){ //实现Promise.resolve()
+                return new MP((resolve)=>{
+                    if(value instanceof MP){
+                        value.then(resolve)
+                    }else{
+                        resolve(value);
+                    }
+                })
+            }
+            static all(promises){ //实现Promise.all()
+                let arr = [];
+                return new MP((resolve,reject)=>{
+                    for(let i=0;i<promises.length;i++){
+                        promises[i].then(res=>{
+                            arr[i] = res;
+                            if (arr.length === length) {
+                                resolve(arr);
+                            }
+                        },rej=>{
+                            reject(rej);
+                        })
+                    }
+                })
+            }
+            resolve(value) {
+                if (this.status == PENDING) {
+                    let that = this;
+                    this.status = FUFILLED;
+                    this.value = value;
+                    //  // 触发回调函数
+                    queueMicrotask(() => {
+                        that.callbacks.map(callback => {
+                            callback.onFulfilled(that.value);
+                        });
+                    });
+                }
+            }
+            reject(season) {
+                if (this.status == PENDING) {
+                    let that = this;
+                    this.status = REJECTED;
+                    this.value = season;
+                    // 触发回调函数
+                    queueMicrotask(() => {
+                        that.callbacks.map(callback => {
+                            callback.onRejected(that.value);
+                        });
+                    });
+                }
+            }
+            then(onFulfilled, onRejected) {
+                // 判断两个参数是不是函数类型，如果不是函数，需要手动封装，否则下面执行时会报错。
+                if (typeof onFulfilled !== "function") {
+                    onFulfilled = () => {};
+                } else if (typeof onRejected !== "function") {
+                    onRejected = () => {};
+                }
+                return new MP((resolve,reject)=>{
+                    if (this.status === "fulfilled") {
+                        let result = onFulfilled(this.value);
+                        // 结果时MP类型时
+                        if(result instanceof MP){
+                            // 我们可以直接通过这个promise的then方法来传递值
+                            result.then(resolve, reject);
+                        }else{
+                            resolve(result);
+                        }
+                    } else if (this.status === "rejected") {
+                        let result = onRejected(value);
+                        // 结果时MP类型时
+                        if (result instanceof MP) {
+                            result.then(resolve, reject);
+                        } else {
+                            resolve(result);
+                        }
+                    } else {
+                        this.callbacks.push({
+                            onFulfilled: value => {
+                                let result = onFulfilled(value);
+                                // 结果时MP类型时
+                                if (result instanceof MP) {
+                                    result.then(resolve, reject);
+                                } else {
+                                    resolve(result);
+                                }
+                            },
+                            onRejected: value => {
+                                let result = onRejected(value);
+                                // 结果时MP类型时
+                                if (result instanceof MP) {
+                                    result.then(resolve, reject);
+                                } else {
+                                    resolve(result);
+                                }
+                            }
+                        });
+                    }
+                })
+            } 
+        } 
+
+        let add = new MP((res,rej)=>{console.log(1);res(123)});
+        let acc = add.then(res=>{
+            console.log(res);
+            return new MP(res=>{res('aa')})
+        });
+        let aaa = acc.then(res=>{console.log(res)})
+        console.log(aaa);
+
+        
+        console.log('---------------------------------------------实现promise END------------------------------------------');
+
+        //=========================================================async 函数的实现原理==============================================
+        // async 函数的实现原理，就是将 Generator 函数和自动执行器，包装在一个函数里。
+
+        // async function fn(args) {
+        // // ...
+        // }
+        // // 等同于
+        // function fn(args) {
+        //     return spawn(function* () {
+        //         // ...
+        //     });
+        // }
+
+        function spawn(genF) {
+            return new Promise(function(resolve, reject) {
+                const gen = genF();
+                function step(nextF) {
+                    let next;
+                    try {
+                        next = nextF();
+                    } catch(e) {
+                        return reject(e);
+                    }
+                    if(next.done) {
+                        return resolve(next.value);
+                    }
+                    Promise.resolve(next.value).then(function(v) {
+                        step(function() { return gen.next(v); });
+                    }, function(e) {
+                        step(function() { return gen.throw(e); });
+                    });
+                }
+                step(function() { return gen.next(undefined); });
+            });
+        }
+
+        //=========================================================常见算法题=========================================================
+        //链表
+        //反转链表问题
+        function ReverseList(pHead)
+        {
+            // write code here
+            let curr = pHead;
+            let prev = null;
+            while(curr){
+                let next = curr.next;
+                curr.next = prev;
+                prev = curr;
+                curr = next;
+            }
+            return prev
+        }
+        // 1 --> 2 --> 3   3-->2-->1
+        //指定区间反转
+        function reverseBetween( head ,  m ,  n ) {
+            // write code here
+            const dummy_node = new ListNode(-1);
+            dummy_node.next = head;
+            let pre = dummy_node;
+            for (let i = 0; i < m - 1; ++i) {
+                pre = pre.next;
+            }
+
+            let cur = pre.next;
+            for (let i = 0; i < n - m; ++i) {
+                const next = cur.next;
+                cur.next = next.next;
+                next.next = pre.next;
+                pre.next = next;
+            }
+            return dummy_node.next;
+        }
+        // 1 --> 2 --> 3 --> 4 --> 5  2,4  ==> 1 --> 4 --> 3 --> 2 --> 5
+        //合并两个递增排序链表
+        function Merge(list1, list2)
+        {
+            // write code here
+            let list = new ListNode();
+            let head = list;
+            while(list1!=null&&list2!=null){
+                    if(list1.val<=list2.val){
+                        list.next = list1;
+                        list1 = list1.next;
+                    }else{
+                        list.next = list2;
+                        list2 = list2.next;
+                    }
+                        list = list.next;
+            }
+            list.next = (list1 == null) ? list2 : list1;
+            return head.next;
+        }
+
+        //判断链表中是否有环
+        function hasCycle( head ) {
+            // write code here
+            let set = new Set();
+            while(head){
+                if(set.has(head)){
+                    return true;
+                }else{
+                    set.add(head);
+                }
+                head = head.next;
+            }
+            return false;
+        }
+
+        //链表中倒数最后k个结点
+        function FindKthToTail( head ,  k ) {
+            // write code here
+            let record = head;
+            let num = 0;
+            while(record){
+                num++;
+                record = record.next;
+            }
+            record = num - k;
+            num = 0;
+            while(head){
+                if(record==num)return head;
+                num++;
+                head = head.next;
+            }
+            return null;
+        }
+
+        //判断一个链表是否为回文结构
+        function isPail( head ) {
+            // write code here
+            const vals = [];
+            while (head !== null) {
+                vals.push(head.val);
+                head = head.next;
+            }
+            for (let i = 0, j = vals.length - 1; i < j; ++i, --j) {
+                if (vals[i] !== vals[j]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        //二分查找 -- 条件是递增或者递减数组
+        function search( nums ,  target ) {
+            // write code here
+            let left = 0;
+            let right = nums.length-1;
+            while(left <= right){
+                let mid = ((right-left)>>1) + left;
+                if(nums[mid]==target)return mid;
+                if(nums[mid]<target){
+                    left = mid+1;
+                }else {
+                    right = mid-1;
+                }
+            }
+            return -1;
+        }
+
+        //二叉树
+        //二叉树的前序遍历-根左右
+        var preorderTraversal = function (root) {
+            let res = [];
+            let dfs = (root) => {
+                if (!root) return;
+                res.push(root.val);
+                dfs(root.left);
+                dfs(root.right);
+            }
+            dfs(root);
+            return res;
+
+            // let stk = [];
+            // let res = [];
+            // while (stk.length || !root) {
+            //     while (root) {
+            //         res.push(root.val);
+            //         stk.push(root);
+            //         root = root.left;
+            //     }
+            //     root = stk.pop();
+            //     root = root.right;
+            // }
+            // return res;
+
+        };
+
+        // 二叉树的层序遍历
+        function levelOrder( root ) {
+            // write code here
+            let res = [];
+            let queue = [];
+            if(root!=null){
+                queue.push(root);
+            }
+            while(queue.length){
+                let n = queue.length;
+                let temp = [];
+                for(let i=0;i<n;i++){
+                    let node = queue.shift();
+                    temp.push(node.val);
+                    if(node.left){
+                        queue.push(node.left);
+                    }
+                    if(node.right){
+                        queue.push(node.right);
+                    }
+                }
+                res.push(temp);
+            }
+            return res;
+        }
+
+        //对称二叉树
+        function isSymmetrical(root)
+        {
+            // write code here
+            const check = (left, right) => {
+                if (left == null && right == null) { // 两个子树都为null，是对称的
+                return true;
+                }
+                if (left && right) { // 两个子树都存在，则需要：root值相同，且他们的子树也满足镜像
+                    return left.val == right.val && check(left.left, right.right) && check(left.right, right.left);
+                }
+                return false;        // 一个子树存在一个不存在，肯定不对称
+            };
+
+            if (root == null) {     // 如果传入的root就是null，对称
+                return true;
+            }           
+            return check(root.left, root.right); // 否则，判断它的左右子树是否满足对称
+        }
+
+
+        function TreeNode(val, left, right) {//二叉树
+            this.val = (val === undefined ? 0 : val)
+            this.left = (left === undefined ? null : left)
+            this.right = (right === undefined ? null : right)
+        }
+
+
+        function ListNode(val, next) {//链表
+            this.val = (val === undefined ? 0 : val)
+            this.next = (next === undefined ? null : next)
+        }
+        //向下取整小技巧：一、 1.2|0 ==> 1  二、  1.2>>0 ==> 1
+        //注意：比较数字大小的时候一定要转数字类型，不然会出现 '3'>'12'为true的情况
+        //右移>>符号一定要注意优先级 >> 比 + - * /要低
+    </script>
+</body>
+</html>
