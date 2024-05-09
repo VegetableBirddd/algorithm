@@ -182,9 +182,10 @@
             let self = this;
             var context = context || window;
             let fn = function(){
+                // 如果被new调用，this应该是fn的实例
                 return self.apply(this instanceof fn?this:context,[...arg,...arguments])
             }
-            fn.prototype = self.prototype;
+            fn.prototype = Object.create(self.prototype);
             return fn;
         }
 
